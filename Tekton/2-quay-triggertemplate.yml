@@ -1,0 +1,25 @@
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: quay-triggertemplate
+spec:
+  params:
+    - name: docker_url
+    - name: tag
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: TaskRun
+      metadata:
+        generateName: quay-image-scan-
+      spec:
+        taskRef:
+          name: rox-image-check
+          kind: ClusterTask
+        params:
+        - name: image
+          value: "$(tt.params.docker_url):$(tt.params.tag)"
+        - name: rox_api_token
+          value: roxsecrets
+        - name: rox_central_endpoint
+          value: roxsecrets

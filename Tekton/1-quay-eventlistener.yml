@@ -1,0 +1,39 @@
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: quay-eventlistener
+spec:
+  triggers:
+    - name: quay-eventlistener
+      bindings:
+        - ref: quay-triggerbinding
+      template:
+        ref: quay-triggertemplate
+  resources:
+    kubernetesResource:
+      spec:
+        template:
+          spec:
+            serviceAccountName: pipeline
+            containers:
+              - resources:
+                  requests:
+                    memory: "64Mi"
+                    cpu: "250m"
+                  limits:
+                    memory: "128Mi"
+                    cpu: "500m"
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    eventlistener:  quay-eventlistener
+  name: quay-eventlistener-route
+spec:
+  port:
+    targetPort: http-listener
+  to:
+    kind: Service
+    name: el-quay-eventlistener

@@ -1,0 +1,11 @@
+---
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: quay-triggerbinding
+spec:
+  params:
+    - name: docker_url
+      value: $(body.docker_url)
+    - name: tag
+      value: $(body.updated_tags[0])
